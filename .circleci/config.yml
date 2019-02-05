@@ -27,7 +27,7 @@ jobs:
           root: .
           paths:
             - .
-            working_directory: backend
+          working_directory: backend
       # save cache
       - save_cache:
           paths:
