@@ -1,7 +1,7 @@
 class HelloWorld {
     sayHello(event) {
         return {
-            message: 'test v6',
+            message: 'test v7',
             input: event,
         };
     }
