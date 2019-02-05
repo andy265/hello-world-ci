@@ -22,8 +22,7 @@
     "coverageReporters": [
       "json",
       "lcov",
-      "html",
-      "text"
+      "html"
     ]
   },
   "author": "Rupak Ganguly",
