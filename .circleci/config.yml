@@ -17,7 +17,7 @@ jobs:
           name: Install dependencies
           command: npm i
       # run tests
-      - run: 
+      - run:
           name: Run tests with code coverage
           command: npm test --coverage
       # save workspace
@@ -79,6 +79,9 @@ workflows:
           type: approval
           requires:
            - build
+          filters:
+            branches:
+              only: master
 
       - deploy-production:
           requires:
