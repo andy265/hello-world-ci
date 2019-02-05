@@ -31,7 +31,7 @@ jobs:
       # deploy app            
       - run:
           name: Deploy application 
-          command: sls deploy -v
+          command: npm run deploy-production
 
       - save_cache:
           paths:
