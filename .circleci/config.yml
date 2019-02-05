@@ -5,22 +5,27 @@ jobs:
     docker:
       - image: circleci/node:8.10
     steps:
+      # get code
       - checkout
-      # Download and cache dependencies
+      # get dependencies from cache or download
       - restore_cache:
           keys:
             - dependencies-cache-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - dependencies-cache
       - run:
-          name: Install Serverless CLI and dependencies
-          command: |
-            sudo npm i -g serverless
-            npm install
+          name: Install dependencies
+          command: npm i
       # run tests
-      - run: 
+      - run:
           name: Run tests with code coverage
           command: npm test --coverage
+      # save workspace
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+      # save cache
       - save_cache:
           paths:
             - node_modules
@@ -31,7 +36,10 @@ jobs:
     docker:
       - image: circleci/node:8.10
     steps:
-      # deploy app
+      # load workspace
+      - attach_workspace:
+          at: .
+      # deploy to test
       - run:
           name: Deploy application
           command: npm run deploy-test
@@ -41,7 +49,10 @@ jobs:
     docker:
       - image: circleci/node:8.10
     steps:
-      # deploy app
+      # load workspace
+      - attach_workspace:
+          at: .
+      # deploy to production
       - run:
           name: Deploy application
           command: npm run deploy-production
