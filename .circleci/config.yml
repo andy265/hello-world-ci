@@ -1,7 +1,6 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/hello-world-ci # TODO: change
     docker:
       - image: circleci/node:8.10
     steps:
@@ -13,26 +12,30 @@ jobs:
             - dependencies-cache-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - dependencies-cache
+          working_directory: backend
       - run:
           name: Install dependencies
           command: npm i
+          working_directory: backend
       # run tests
       - run:
           name: Run tests with code coverage
           command: npm test --coverage
+          working_directory: backend
       # save workspace
       - persist_to_workspace:
           root: .
           paths:
             - .
+            working_directory: backend
       # save cache
       - save_cache:
           paths:
             - node_modules
           key: dependencies-cache-{{ checksum "package.json" }}
+          working_directory: backend
 
   deploy-test:
-    working_directory: ~/hello-world-ci # TODO: change
     docker:
       - image: circleci/node:8.10
     steps:
@@ -43,9 +46,9 @@ jobs:
       - run:
           name: Deploy application
           command: npm run deploy-test
+          working_directory: backend
 
   deploy-production:
-    working_directory: ~/hello-world-ci # TODO: change
     docker:
       - image: circleci/node:8.10
     steps:
@@ -56,6 +59,7 @@ jobs:
       - run:
           name: Deploy application
           command: npm run deploy-production
+          working_directory: backend
 
 workflows:
   version: 2
