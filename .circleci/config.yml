@@ -9,10 +9,9 @@ jobs:
       # get dependencies from cache or download
       - restore_cache:
           keys:
-            - dependencies-cache-{{ checksum "package.json" }}
+            - dependencies-cache-{{ checksum "backend/package.json" }}
             # fallback to using the latest cache if no exact match is found
             - dependencies-cache
-          working_directory: backend
       - run:
           name: Install dependencies
           command: npm i
@@ -26,14 +25,12 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
-          working_directory: backend
+            - backend
       # save cache
       - save_cache:
           paths:
             - node_modules
-          key: dependencies-cache-{{ checksum "package.json" }}
-          working_directory: backend
+          key: dependencies-cache-{{ checksum "backend/package.json" }}
 
   deploy-test:
     docker:
@@ -46,7 +43,6 @@ jobs:
       - run:
           name: Deploy application
           command: npm run deploy-test
-          working_directory: backend
 
   deploy-production:
     docker:
@@ -59,7 +55,6 @@ jobs:
       - run:
           name: Deploy application
           command: npm run deploy-production
-          working_directory: backend
 
 workflows:
   version: 2
