@@ -12,11 +12,18 @@
     "jest": "^21.2.1"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "deploy-test": "serverless deploy --stage test --region us-east-1 -v",
+    "deploy-production": "serverless deploy --stage production --region us-east-1 -v"
   },
   "jest": {
     "collectCoverage": true,
-    "coverageReporters": ["json", "lcov", "html", "text"]
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "html",
+      "text"
+    ]
   },
   "author": "Rupak Ganguly",
   "license": "MIT"
