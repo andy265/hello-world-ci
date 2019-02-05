@@ -23,9 +23,7 @@ jobs:
           working_directory: backend
       # save workspace
       - persist_to_workspace:
-          root: .
-          paths:
-            - backend
+          root: backend
       # save cache
       - save_cache:
           paths:
