@@ -1,4 +1,7 @@
 version: 2
+orbs:
+  aws-s3: circleci/aws-s3@1.0.0
+
 jobs:
   build:
     docker:
@@ -6,85 +9,32 @@ jobs:
     steps:
       # get code
       - checkout
-      # get dependencies from cache or download
-      - restore_cache:
-          keys:
-            - dependencies-cache-{{ checksum "backend/package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - dependencies-cache
       - run:
-          name: Install dependencies
-          command: npm i
-          working_directory: backend
-      # run tests
+          name: Set AWS variable
+          command: export AWS_ACCESS_KEY_ID="test"
       - run:
-          name: Run tests with code coverage
-          command: npm test --coverage
-          working_directory: backend
-      # save workspace
-      - persist_to_workspace:
-          root: backend
-          paths:
-            - .
-      # save cache
-      - save_cache:
-          paths:
-            - backend/node_modules
-          key: dependencies-cache-{{ checksum "backend/package.json" }}
-
-  deploy-test:
-    docker:
-      - image: circleci/node:8.10
-    steps:
-      # load workspace
-      - attach_workspace:
-          at: .
+          name: Set AWS variable
+          command: export AWS_SECRET_ACCESS_KEY="test"
+      # put aws credentials to the file
+      - run:
+          name: Put aws credentials
+          command: mkdir ~/.aws && echo -e "[sweepy-prod]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\n\n[sweepy-deploy-prod]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\n" > ~/.aws/credentials
       # deploy to test
       - run:
           name: Deploy application
           command: npm run deploy-test
-
-  deploy-production:
-    docker:
-      - image: circleci/node:8.10
-    steps:
-      # load workspace
-      - attach_workspace:
-          at: .
-      # deploy to production
+          working_directory: backend
+      # install AWS CLI dependencies
       - run:
-          name: Deploy application
-          command: npm run deploy-production
-
-workflows:
-  version: 2
-  build-deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - test
-                - master
-
-      - deploy-test:
-          requires:
-            - build
-          filters:
-            branches:
-              only: test
-
-      - hold:
-          type: approval
-          requires:
-           - build
-          filters:
-            branches:
-              only: master
-
-      - deploy-production:
-          requires:
-            - hold
-          filters:
-            branches:
-              only: master
+          name: Install PIP
+          command: sudo apt-get install python-pip python-dev
+      - run:
+          name: Install AWS CLI
+          command: sudo pip install awscli
+      - run:
+          name: Set AWS region variable
+          command: export AWS_REGION="us-east-1"
+      # put extension output to S3
+      - aws-s3/copy:
+          from: 'chrome-extension/output'
+          to: 's3://ci-sweepy-chrome-extension-output'
