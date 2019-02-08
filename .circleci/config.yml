@@ -29,6 +29,9 @@ jobs:
       - run:
           name: Set AWS region variable
           command: export AWS_REGION="us-east-1"
+      - run:
+          name: check AWS region variable
+          command: echo $AWS_REGION
       # put extension output to S3
       - aws-s3/copy:
           from: 'chrome-extension/output'
