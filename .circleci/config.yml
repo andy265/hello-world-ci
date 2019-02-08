@@ -19,11 +19,6 @@ jobs:
       - run:
           name: Put aws credentials
           command: mkdir ~/.aws && echo -e "[sweepy-prod]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\n\n[sweepy-deploy-prod]\naws_access_key_id=$AWS_ACCESS_KEY_ID\naws_secret_access_key=$AWS_SECRET_ACCESS_KEY\n" > ~/.aws/credentials
-      # deploy to test
-      - run:
-          name: Deploy application
-          command: npm run deploy-test
-          working_directory: backend
       # install AWS CLI dependencies
       - run:
           name: Install PIP
